@@ -65,6 +65,8 @@
   /* ---------- CONTENT PAGES ---------- */
   .wrap { height:100%; max-width:1180px; margin:0 auto; padding:7rem 3rem 4rem 15rem; display:flex; flex-direction:column; justify-content:center; }
   .kicker { color:var(--mute); margin-bottom:1.4rem; }
+  h1, h2, .cover-art .bt { text-wrap:balance; }
+  p, .lede, .stories .j, .events .empty { text-wrap:pretty; }
   h2 { font-family:"Bodoni Moda", serif; font-weight:400; font-size:clamp(2.6rem, 5.4vw, 4.2rem); line-height:1.04; letter-spacing:-.015em; margin-bottom:2rem; }
   h2 em { font-style:italic; }
   .lede { font-size:1.6rem; line-height:1.4; margin-bottom:1.2rem; max-width:34em; }
@@ -99,7 +101,7 @@
   /* book */
   .book { display:grid; grid-template-columns:auto 1fr; gap:4.5rem; align-items:center; }
   .cover-art { width:min(30vh, 260px); aspect-ratio:2/3; background:var(--ink); color:var(--paper); display:flex; flex-direction:column;
-               justify-content:space-between; padding:1.4rem 1.2rem; box-shadow:18px 24px 50px rgba(0,0,0,.18); }
+               justify-content:space-between; padding:1.4rem 1.2rem; box-shadow:14px 18px 36px rgba(0,0,0,.16); }
   .cover-art .bt { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1.9rem; line-height:1.05; color:var(--paper); }
   .cover-art .ba { font-family:"Bodoni Moda", serif; font-size:1.05rem; letter-spacing:.04em; }
 
@@ -137,20 +139,50 @@
   .sign { position:absolute; left:15rem; right:3rem; bottom:2.4rem; display:flex; justify-content:space-between; color:#5f5c56; }
 
   @media (max-width:860px){
-    .cols { grid-template-columns:1fr; gap:1.6rem; }
-    .stories a { grid-template-columns:1fr auto; gap:.2rem 1rem; } .stories .j { grid-column:1; grid-row:2; }
-    .book { grid-template-columns:1fr; gap:2rem; } .cover-art { width:150px; }
+    body { font-size:19px; }
+    html { scroll-snap-type:none; }
+    /* pages grow with their content instead of clipping it */
+    .page { height:auto; min-height:100vh; min-height:100svh; }
+    .cover, #portrait { height:100vh; height:100svh; }
+    .wrap { height:auto; min-height:100vh; min-height:100svh; padding:6rem 1.4rem 4rem; }
+
+    /* table of contents moves into the top bar as a row of numerals */
+    nav.top { padding:1.15rem 1.2rem; }
+    .counter { display:none; }
+    .toc { top:1.05rem; right:.8rem; left:auto; transform:none; display:flex; gap:0; }
+    .toc li { margin:0; }
+    .toc a { gap:0; padding:.3rem .32rem; }
+    .toc .bar, .toc .name { display:none; }
+    .toc .num { width:auto; font-size:.9rem; padding-bottom:2px; border-bottom:1px solid transparent; transition:border-color .4s; }
+    .toc a.on .num { border-bottom-color:currentColor; }
+
+    h2 { margin-bottom:1.3rem; }
+    .lede { font-size:1.22rem; line-height:1.45; }
+    .kicker { margin-bottom:1rem; }
+    .facts { gap:1.4rem 2.2rem; margin-top:2rem; }
+    .cols { grid-template-columns:1fr; gap:1.8rem; }
+
+    .stories a { grid-template-columns:1fr auto; gap:.15rem 1rem; padding:.8rem 0; }
+    .stories .j { grid-column:1; grid-row:2; font-size:.98rem; }
+    .stories .t { font-size:1.2rem; }
+    .stories a:hover { padding-left:0; }
+
+    .book { grid-template-columns:1fr; gap:1.8rem; }
+    .cover-art { width:132px; padding:.9rem .8rem; box-shadow:8px 12px 26px rgba(0,0,0,.16); }
+    .cover-art .bt { font-size:1.15rem; }
+    .cover-art .ba { font-size:.72rem; }
+    .cover-art .ba small { font-size:.4rem !important; letter-spacing:.2em !important; }
+
     .events li { grid-template-columns:1fr; gap:.2rem; }
-    .titles { font-size:1.05rem; }
-    html { scroll-snap-type:y proximity; }
-    nav.top { padding:1.2rem 1.4rem; }
-    .toc { left:1.2rem; } .toc .name { display:none; } .toc a.on .bar { width:22px; }
-    .wrap { padding:6rem 1.4rem 3rem 4.6rem; }
-    .sign { left:4.6rem; right:1.4rem; }
-    .cover-foot { left:1.4rem; right:1.4rem; }
-    .portrait-frame { height:auto; width:min(62vw, 420px); }
-    .orbiter { width:18vw; margin:-9vw 0 0 -9vw; }
+    .page.dark .contact-line { font-size:1.3rem; }
+    .sign { position:static; padding:0 1.4rem 2rem; margin-top:-2rem; }
+    .cover-foot { left:1.2rem; right:1.2rem; bottom:1.6rem; }
+
+    .portrait-frame { height:auto; width:min(56vw, 360px); }
+    .orbiter { width:15vw; margin:-7.5vw 0 0 -7.5vw; }
+    .portrait figcaption { margin-top:calc(15vw + 1.6rem); }
   }
+
   @media (prefers-reduced-motion:reduce){ * { transition:none !important; animation:none !important; } html { scroll-behavior:auto; } }
 </style>
 </head>
@@ -288,24 +320,26 @@
   // mark the page that fills most of the screen as active; sync the table of contents
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (!e.isIntersecting) { e.target.classList.remove('active'); return; }
+      const fills = e.intersectionRatio >= .55 || e.intersectionRect.height >= innerHeight * .55;
+      if (!e.isIntersecting || !fills) { e.target.classList.remove('active'); return; }
       e.target.classList.add('active');
       const id = e.target.id;
       links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
       cur.textContent = e.target.dataset.n;
       history.replaceState(null, '', id === 'top' ? location.pathname : '#' + id);
     });
-  }, { threshold:.55 });
+  }, { threshold:[0, .15, .3, .45, .55, .7, .85, 1] });
   pages.forEach(p => io.observe(p));
 
-  // orbit: Sofia circles Catherine's portrait, always in front
+  // orbit: the cat circles Catherine's portrait, always in front
   const orb = document.getElementById('orbiter'), frame = document.querySelector('.portrait-frame');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const t0 = performance.now();
   if (orb) (function spin(now){
     const w = frame.offsetWidth, h = frame.offsetHeight, r = orb.offsetWidth;
     const a = ((now - t0) / 18000) * 2 * Math.PI - Math.PI * .75;
-    const x = Math.cos(a) * (w * .5 + r * .9), y = Math.sin(a) * (h * .5 + r * .6);
+    const rx = Math.min(w * .5 + r * .9, document.documentElement.clientWidth / 2 - r / 2 - 8);
+    const x = Math.cos(a) * rx, y = Math.sin(a) * (h * .5 + r * .6);
     if (!orb.isConnected) return;
     orb.style.transform = `translate(${x}px, ${y}px)`;
     if (!still) requestAnimationFrame(spin);
