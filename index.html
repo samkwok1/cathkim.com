@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catherine Kim — Ann Arbor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0a0a0a; --paper:#f5f3ee; --sand:#f2f2da; /* CMYK 0,0,10,5 */ --mute:#8f8a80; --line:rgba(60,45,25,.16);
+          --ease:cubic-bezier(.16,1,.3,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+  body { background:var(--sand); color:var(--ink); font-family:"Cormorant Garamond", Georgia, serif; font-size:21px; line-height:1.65; -webkit-font-smoothing:antialiased; }
+  .label { font-family:Inter, sans-serif; font-size:.62rem; font-weight:500; letter-spacing:.32em; text-transform:uppercase; }
+
+  /* ---------- PAGES ---------- */
+  .page { position:relative; height:100vh; min-height:620px; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; }
+  .page.dark { background:var(--ink); color:var(--paper); }
+
+  /* Page transition: content wipes in along a diagonal fracture, like a shard sliding into place */
+  .enter { clip-path:polygon(-20% -30%,-20% -30%,-40% 130%,-40% 130%); transform:translateX(-3vw);
+           transition:clip-path 1.3s var(--ease), transform 1.3s var(--ease), opacity .9s ease; opacity:.0; }
+  .page.active .enter { clip-path:polygon(-20% -30%,140% -30%,120% 130%,-40% 130%); transform:none; opacity:1; }
+  .page.active .enter.d1 { transition-delay:.12s; }
+  .page.active .enter.d2 { transition-delay:.24s; }
+  .page.active .enter.d3 { transition-delay:.36s; }
+  /* when leaving, content drifts and dims slightly */
+  .page:not(.active) .inner { transform:scale(.97); opacity:.4; }
+  .inner { height:100%; transition:transform 1.2s var(--ease), opacity 1.2s ease; }
+
+
+  /* ---------- NAV + TABLE OF CONTENTS ---------- */
+  nav.top { position:fixed; top:0; left:0; right:0; z-index:30; display:flex; justify-content:space-between; align-items:center;
+            padding:1.6rem 3rem; color:var(--paper); mix-blend-mode:difference; pointer-events:none; }
+  nav.top a { pointer-events:auto; color:inherit; text-decoration:none; }
+  .mark { font-family:"Bodoni Moda", serif; font-size:1.05rem; letter-spacing:.04em; }
+  .counter { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1rem; }
+  .counter b { font-weight:400; display:inline-block; min-width:1.6em; text-align:right; transition:opacity .4s; }
+
+  .toc { position:fixed; left:3rem; top:50%; transform:translateY(-50%); z-index:30; list-style:none;
+         color:var(--paper); mix-blend-mode:difference; }
+  .toc li { margin:1.05rem 0; }
+  .toc a { display:flex; align-items:center; gap:.9rem; color:inherit; text-decoration:none; opacity:.42; transition:opacity .5s; }
+  .toc .num { font-family:"Bodoni Moda", serif; font-style:italic; font-size:.95rem; width:1.6rem; text-transform:none; letter-spacing:0; }
+  .toc .bar { width:14px; height:1px; background:currentColor; transition:width .7s var(--ease); }
+  .toc .name { opacity:0; transform:translateX(-6px); transition:opacity .5s, transform .5s var(--ease); }
+  .toc a:hover, .toc a.on { opacity:1; }
+  .toc a.on .bar { width:44px; }
+  .toc a.on .name, .toc a:hover .name { opacity:1; transform:none; }
+
+  /* ---------- COVER ---------- */
+  .band { font-weight:400; margin:0; position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+          font-family:"Bodoni Moda", serif; color:var(--paper); text-align:center; line-height:.84; }
+  .band .first { font-size:clamp(4.2rem, 15vw, 13.5rem); letter-spacing:-.025em; }
+  .band .last  { font-size:clamp(4.2rem, 15vw, 13.5rem); font-style:italic; letter-spacing:-.02em; }
+  .cover-foot { position:absolute; left:3rem; right:3rem; bottom:2.4rem; display:flex; justify-content:space-between; align-items:end; color:var(--mute); }
+  .scroll { width:1px; height:42px; background:#333; position:relative; overflow:hidden; }
+  .scroll::after { content:""; position:absolute; left:0; top:-42px; width:1px; height:42px; background:var(--paper); animation:drip 2.2s infinite; }
+  @keyframes drip { to { top:42px; } }
+
+  /* ---------- CONTENT PAGES ---------- */
+  .wrap { height:100%; max-width:1180px; margin:0 auto; padding:7rem 3rem 4rem 15rem; display:flex; flex-direction:column; justify-content:center; }
+  .kicker { color:var(--mute); margin-bottom:1.4rem; }
+  h2 { font-family:"Bodoni Moda", serif; font-weight:400; font-size:clamp(2.6rem, 5.4vw, 4.2rem); line-height:1.04; letter-spacing:-.015em; margin-bottom:2rem; }
+  h2 em { font-style:italic; }
+  .lede { font-size:1.6rem; line-height:1.4; margin-bottom:1.2rem; max-width:34em; }
+  .ph { color:var(--mute); font-style:italic; }
+
+  /* portrait page */
+  .portrait-wrap { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6rem 2rem 3rem; }
+  .portrait-frame { position:relative; height:min(60vh, 620px); aspect-ratio:4/5; background:#e2d8c6; overflow:hidden; }
+  .portrait-frame img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.08);
+                        transform:scale(1.08); transition:transform 2.4s var(--ease); }
+  .page.active .portrait-frame img { transform:scale(1); }
+  /* Sofia orbits Catherine on a tilted ellipse, passing in front of and behind the portrait */
+  .system { position:relative; }
+  .orbiter { position:absolute; left:50%; top:50%; width:calc(min(60vh,620px) * .2); aspect-ratio:1; margin:calc(min(60vh,620px) * -.1) 0 0 calc(min(60vh,620px) * -.1); z-index:2;
+             border-radius:50%; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.18); will-change:transform; opacity:0; transition:opacity 1s .6s; }
+  .page.active .orbiter { opacity:1; }
+  .orbiter img { width:100%; height:100%; object-fit:cover; object-position:48% 44%; transform:scale(1.9); transform-origin:48% 47%; filter:grayscale(1) contrast(1.05); }
+  .portrait figcaption { color:var(--mute); margin-top:calc(min(60vh,620px) * .25); }
+
+  /* work page */
+  /* stories list */
+  .stories { list-style:none; max-width:900px; border-top:1px solid var(--line); }
+  .stories a { display:grid; grid-template-columns:1.1fr 1.4fr auto; align-items:baseline; gap:2rem; padding:.85rem 0;
+               border-bottom:1px solid var(--line); color:inherit; text-decoration:none; transition:padding .5s var(--ease), background .5s; }
+  .stories a:hover { padding-left:.8rem; }
+  .stories .t { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1.35rem; line-height:1.2; }
+  .stories .j { font-size:1.05rem; }
+  .stories .j small { display:block; color:var(--mute); font-style:italic; font-size:.82rem; line-height:1.3; }
+  .stories .go { font-family:Inter, sans-serif; font-size:.8rem; color:var(--mute); transition:transform .5s var(--ease), color .3s; }
+  .stories a:hover .go { transform:translateX(4px); color:var(--ink); }
+
+  /* book */
+  .book { display:grid; grid-template-columns:auto 1fr; gap:4.5rem; align-items:center; }
+  .cover-art { width:min(30vh, 260px); aspect-ratio:2/3; background:var(--ink); color:var(--paper); display:flex; flex-direction:column;
+               justify-content:space-between; padding:1.4rem 1.2rem; box-shadow:18px 24px 50px rgba(0,0,0,.18); }
+  .cover-art .bt { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1.9rem; line-height:1.05; color:var(--paper); }
+  .cover-art .ba { font-family:"Bodoni Moda", serif; font-size:1.05rem; letter-spacing:.04em; }
+
+  /* events */
+  .events { list-style:none; max-width:860px; border-top:1px solid var(--line); }
+  .events li { display:grid; grid-template-columns:7.5rem 1fr auto; gap:2rem; align-items:baseline; padding:1rem 0; border-bottom:1px solid var(--line); }
+  .events .d { font-family:"Bodoni Moda", serif; font-size:1.1rem; }
+  .events .w { font-size:1.15rem; } .events .w small { display:block; color:var(--mute); font-style:italic; font-size:.85rem; }
+  .events li:has(.empty) { display:block; }
+  .events .empty { display:block; max-width:34em; color:var(--mute); font-style:italic; padding:1.2rem 0; }
+
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; max-width:860px; }
+  .cols h3 { font-family:Inter, sans-serif; font-size:.62rem; font-weight:500; letter-spacing:.32em; text-transform:uppercase; color:var(--mute); margin-bottom:1rem; font-weight:500; }
+  .list { list-style:none; }
+  .list li { padding:.55rem 0; border-top:1px solid var(--line); line-height:1.35; }
+  .list li:last-child { border-bottom:1px solid var(--line); }
+  .list .t { font-family:"Bodoni Moda", serif; font-size:1.05rem; }
+  .list .m { display:block; color:var(--mute); font-size:.85rem; font-style:italic; }
+  .titles { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1.25rem; line-height:1.9; }
+  .titles span:not(:last-child)::after { content:"·"; font-style:normal; color:var(--mute); margin:0 .7rem; }
+  .body { max-width:36em; }
+  .body + .body { margin-top:1rem; }
+  .facts { display:flex; gap:3rem; margin-top:2.6rem; flex-wrap:wrap; }
+  .facts div { color:var(--mute); }
+  .facts b { display:block; font-family:"Bodoni Moda", serif; font-weight:400; font-size:1.05rem; letter-spacing:0; text-transform:none; color:var(--ink); margin-top:.35rem; }
+  a.inline { color:inherit; text-decoration:none; border-bottom:1px solid currentColor; }
+  .page.dark .cols h3 { color:#77746d; }
+  .page.dark .contact-line { font-size:clamp(1.25rem, 2vw, 1.6rem); }
+
+  /* contact page */
+  .contact-line { font-family:"Bodoni Moda", serif; font-size:clamp(1.8rem, 3.6vw, 2.8rem); color:var(--paper); text-decoration:none;
+                  background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat; transition:background-size .5s; }
+  .contact-line:hover { background-size:100% 1px; }
+  .page.dark .kicker, .page.dark .ph { color:#77746d; }
+  .sign { position:absolute; left:15rem; right:3rem; bottom:2.4rem; display:flex; justify-content:space-between; color:#5f5c56; }
+
+  @media (max-width:860px){
+    .cols { grid-template-columns:1fr; gap:1.6rem; }
+    .stories a { grid-template-columns:1fr auto; gap:.2rem 1rem; } .stories .j { grid-column:1; grid-row:2; }
+    .book { grid-template-columns:1fr; gap:2rem; } .cover-art { width:150px; }
+    .events li { grid-template-columns:1fr; gap:.2rem; }
+    .titles { font-size:1.05rem; }
+    html { scroll-snap-type:y proximity; }
+    nav.top { padding:1.2rem 1.4rem; }
+    .toc { left:1.2rem; } .toc .name { display:none; } .toc a.on .bar { width:22px; }
+    .wrap { padding:6rem 1.4rem 3rem 4.6rem; }
+    .sign { left:4.6rem; right:1.4rem; }
+    .cover-foot { left:1.4rem; right:1.4rem; }
+    .portrait-frame { height:auto; width:min(62vw, 420px); }
+    .orbiter { width:18vw; margin:-9vw 0 0 -9vw; }
+  }
+  @media (prefers-reduced-motion:reduce){ * { transition:none !important; animation:none !important; } html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="mark" href="#top">C. Kim</a>
+  <span class="counter"><b id="cur">i</b> / vii</span>
+</nav>
+
+<ol class="toc label" id="toc">
+  <li><a href="#top"><span class="num">i.</span><span class="bar"></span><span class="name">Cover</span></a></li>
+  <li><a href="#portrait"><span class="num">ii.</span><span class="bar"></span><span class="name">Portrait</span></a></li>
+  <li><a href="#about"><span class="num">iii.</span><span class="bar"></span><span class="name">About</span></a></li>
+  <li><a href="#stories"><span class="num">iv.</span><span class="bar"></span><span class="name">Stories</span></a></li>
+  <li><a href="#book"><span class="num">v.</span><span class="bar"></span><span class="name">Book</span></a></li>
+  <li><a href="#events"><span class="num">vi.</span><span class="bar"></span><span class="name">Events</span></a></li>
+  <li><a href="#contact"><span class="num">vii.</span><span class="bar"></span><span class="name">Contact</span></a></li>
+</ol>
+
+<!-- i. COVER -->
+<header class="page dark cover" id="top" data-n="i">
+  <h1 class="band"><span class="first">Catherine</span><span class="last">Kim</span></h1>
+  <div class="cover-foot label"><span>Ann Arbor, Michigan</span><span class="scroll"></span></div>
+</header>
+
+<!-- ii. PORTRAIT -->
+<section class="page" id="portrait" data-n="ii">
+  <div class="inner">
+    <figure class="portrait portrait-wrap">
+      <div class="system">
+        <div class="portrait-frame enter">
+          <img src="catherine.jpg" alt="Portrait of Catherine Kim">
+        </div>
+        <div class="orbiter" id="orbiter"><img src="cat.jpg" alt="Catherine's cat" onerror="this.parentNode.remove()"></div>
+      </div>
+      <figcaption class="label enter d2">Catherine Kim · Ann Arbor</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- iii. ABOUT -->
+<section class="page" id="about" data-n="iii">
+  <div class="inner"><div class="wrap">
+    <p class="kicker label enter">iii. — About</p>
+    <h2 class="enter d1">Physician <em>&amp;</em> writer</h2>
+    <p class="lede enter d2">Catherine Kim is a practicing primary care physician, educator, and researcher at the University of Michigan. Her award-winning short fiction has appeared in <em>Ploughshares</em>, <em>The Kenyon Review</em>, <em>The Alaska Quarterly Review</em>, <em>The Southern Review</em>, <em>Chicago Quarterly Review</em>, <em>The Masters Review</em>, <em>LitMag</em>, and other literary journals.</p>
+    <div class="facts label enter d3">
+      <div>Recognition<b>Ploughshares Emerging Writer’s Contest</b><b>McGovern Center Writing Award</b></div>
+      <div>Represented by<b>Aevitas Creative Management</b></div>
+      <div>Home<b>Ann Arbor, Michigan</b></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- iv. STORIES -->
+<section class="page" id="stories" data-n="iv">
+  <div class="inner"><div class="wrap">
+    <p class="kicker label enter">iv. — Stories</p>
+    <h2 class="enter d1">Short <em>fiction</em></h2>
+    <ul class="stories enter d2">
+      <li><a href="https://www.chicagoquarterlyreview.com/" target="_blank" rel="noopener"><span class="t">Zirkusclown</span><span class="j">Chicago Quarterly Review<small>Spring 2027 · Forthcoming</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://pshares.org/issue-article/machemary-emerging-writers-contest-winner-fiction/" target="_blank" rel="noopener"><span class="t">Mache/Mary</span><span class="j">Ploughshares<small>Emerging Writer’s Contest Winner in Fiction</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://link.springer.com/article/10.1007/s10912-026-10027-4" target="_blank" rel="noopener"><span class="t">Nulato</span><span class="j">Journal of Medical Humanities<small>McGovern Center Writing Award in Fiction · 2026</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://www.aqreview.org/aqr-issues/p/aqr-vol-42-number-1-and-2-winter-spring-2026" target="_blank" rel="noopener"><span class="t">Rome</span><span class="j">Alaska Quarterly Review<small>Vol. 42, Nos. 1 &amp; 2 · Winter/Spring 2026</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://kenyonreview.org/piece/the-woman-from-angers/" target="_blank" rel="noopener"><span class="t">The Woman from Angers</span><span class="j">The Kenyon Review<small>Fall 2023</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://www.thesouthernreview.org/contributors/detail/catherine-kim/4151" target="_blank" rel="noopener"><span class="t">Valdai</span><span class="j">The Southern Review</span><span class="go">↗</span></a></li>
+      <li><a href="https://mastersreview.com/new-voices-work-first-by-catherine-kim/" target="_blank" rel="noopener"><span class="t">Work, First</span><span class="j">The Masters Review<small>New Voices</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://litmag.com/issues/back-issues/" target="_blank" rel="noopener"><span class="t">Leang</span><span class="j">LitMag</span><span class="go">↗</span></a></li>
+    </ul>
+  </div></div>
+</section>
+
+<!-- v. BOOK -->
+<section class="page" id="book" data-n="v">
+  <div class="inner"><div class="wrap">
+    <p class="kicker label enter">v. — Book</p>
+    <div class="book">
+      <div class="cover-art enter d1"><span class="bt">Human<br>Subjects</span><span class="ba">Catherine Kim<small style="display:block;font-family:Inter,sans-serif;font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:#77746d;margin-top:.5rem">Wayne State University Press</small></span></div>
+      <div>
+        <h2 class="enter d1"><em>Human Subjects</em></h2>
+        <p class="lede enter d2">Forthcoming from Wayne State University Press in spring 2028.</p>
+        <p class="body enter d3">For publishing, rights, and media inquiries, contact <a class="inline" href="#contact">Aevitas Creative Management</a>.</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- vi. EVENTS -->
+<section class="page" id="events" data-n="vi">
+  <div class="inner"><div class="wrap">
+    <p class="kicker label enter">vi. — Events</p>
+    <h2 class="enter d1">Upcoming <em>events</em></h2>
+    <ul class="events enter d2" id="event-list"></ul>
+  </div></div>
+</section>
+
+<!-- vii. CONTACT -->
+<section class="page dark" id="contact" data-n="vii">
+  <div class="inner"><div class="wrap">
+    <p class="kicker label enter">vii. — Contact</p>
+    <h2 class="enter d1">Get in <em>touch</em></h2>
+    <div class="cols enter d2">
+      <div>
+        <h3>Literary representation</h3>
+        <p>Janet Silver &amp; Lauren Liebow<br><a class="contact-line" href="https://www.aevitascreative.com/client/catherine-kim" target="_blank" rel="noopener">Aevitas Creative Management</a></p>
+      </div>
+      <div>
+        <h3>Aevitas</h3>
+        <p>19 W. 21st Street, Suite 501<br>New York, NY 10010<br><a class="inline" href="tel:+12127656900">+1 (212) 765-6900</a></p>
+      </div>
+    </div>
+  </div></div>
+  <div class="sign label"><span>Catherine Kim</span><span>© <span id="yr"></span></span></div>
+</section>
+
+<script>
+  // ---- EVENTS: add upcoming events here; past dates hide automatically ----
+  const EVENTS = [
+    // { date:'2026-03-14', title:'Reading & conversation', place:'Literati Bookstore, Ann Arbor', link:'https://...' },
+  ];
+  (function renderEvents(){
+    const ul = document.getElementById('event-list'), today = new Date().toISOString().slice(0,10);
+    const up = EVENTS.filter(e => e.date >= today).sort((a,b) => a.date.localeCompare(b.date));
+    if (!up.length) { ul.innerHTML = '<li><span class="empty">New readings and events will be announced here. For appearance requests, please contact Aevitas Creative Management.</span></li>'; return; }
+    const fmt = d => new Date(d + 'T12:00').toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    ul.innerHTML = up.map(e => `<li><span class="d">${fmt(e.date)}</span><span class="w">${e.title}<small>${e.place||''}</small></span>${e.link?`<a class="inline label" href="${e.link}" target="_blank" rel="noopener">Details</a>`:'<span></span>'}</li>`).join('');
+  })();
+
+  const pages = [...document.querySelectorAll('.page')];
+  const links = [...document.querySelectorAll('#toc a')];
+  const cur = document.getElementById('cur');
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // mark the page that fills most of the screen as active; sync the table of contents
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) { e.target.classList.remove('active'); return; }
+      e.target.classList.add('active');
+      const id = e.target.id;
+      links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
+      cur.textContent = e.target.dataset.n;
+      history.replaceState(null, '', id === 'top' ? location.pathname : '#' + id);
+    });
+  }, { threshold:.55 });
+  pages.forEach(p => io.observe(p));
+
+  // orbit: Sofia circles Catherine's portrait, always in front
+  const orb = document.getElementById('orbiter'), frame = document.querySelector('.portrait-frame');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const t0 = performance.now();
+  if (orb) (function spin(now){
+    const w = frame.offsetWidth, h = frame.offsetHeight, r = orb.offsetWidth;
+    const a = ((now - t0) / 18000) * 2 * Math.PI - Math.PI * .75;
+    const x = Math.cos(a) * (w * .5 + r * .9), y = Math.sin(a) * (h * .5 + r * .6);
+    if (!orb.isConnected) return;
+    orb.style.transform = `translate(${x}px, ${y}px)`;
+    if (!still) requestAnimationFrame(spin);
+  })(t0);
+
+  // arrow keys / page keys step between pages
+  addEventListener('keydown', e => {
+    const i = pages.findIndex(p => p.classList.contains('active'));
+    if (['ArrowDown','PageDown',' '].includes(e.key) && i < pages.length - 1) { e.preventDefault(); pages[i+1].scrollIntoView(); }
+    if (['ArrowUp','PageUp'].includes(e.key) && i > 0) { e.preventDefault(); pages[i-1].scrollIntoView(); }
+  });
+</script>
+</body>
+</html>
