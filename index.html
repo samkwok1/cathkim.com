@@ -90,9 +90,12 @@
   /* work page */
   /* stories list */
   .stories { list-style:none; max-width:900px; border-top:1px solid var(--line); }
-  .stories a { display:grid; grid-template-columns:1.1fr 1.4fr auto; align-items:baseline; gap:2rem; padding:.85rem 0;
+  .stories a, .stories .row { display:grid; grid-template-columns:3.4rem 1.05fr 1.35fr auto; align-items:center; gap:1.6rem; padding:.6rem 0;
                border-bottom:1px solid var(--line); color:inherit; text-decoration:none; transition:padding .5s var(--ease), background .5s; }
-  .stories a:hover { padding-left:.8rem; }
+  .stories .th { width:3.4rem; height:3.4rem; object-fit:cover; display:block; filter:grayscale(1) contrast(1.05); background:#e2d8c6;
+                 transition:filter .6s ease; }
+  .stories a:hover .th { filter:none; }
+  .stories a:hover { padding-left:.6rem; }
   .stories .t { font-family:"Bodoni Moda", serif; font-style:italic; font-size:1.35rem; line-height:1.2; }
   .stories .j { font-size:1.05rem; }
   .stories .j small { display:block; color:var(--mute); font-style:italic; font-size:.82rem; line-height:1.3; }
@@ -143,7 +146,9 @@
     .wrap { padding-top:5.5rem; padding-bottom:2.5rem; }
     h2 { font-size:clamp(2.2rem, 4.4vw, 3.4rem); margin-bottom:1.3rem; }
     .kicker { margin-bottom:.9rem; }
-    .stories a { padding:.55rem 0; }
+    .stories a, .stories .row { padding:.45rem 0; }
+    .stories .th { width:2.9rem; height:2.9rem; }
+    .stories a, .stories .row { grid-template-columns:2.9rem 1.05fr 1.35fr auto; }
     .stories .t { font-size:1.2rem; }
     .stories .j { font-size:.98rem; }
     .lede { font-size:1.4rem; }
@@ -173,8 +178,10 @@
     .facts { gap:1.4rem 2.2rem; margin-top:2rem; }
     .cols { grid-template-columns:1fr; gap:1.8rem; }
 
-    .stories a { grid-template-columns:1fr auto; gap:.15rem 1rem; padding:.8rem 0; }
-    .stories .j { grid-column:1; grid-row:2; font-size:.98rem; }
+    .stories a, .stories .row { grid-template-columns:3.6rem 1fr auto; gap:.1rem 1rem; padding:.75rem 0; align-items:start; }
+    .stories .th { grid-row:1 / span 2; width:3.6rem; height:3.6rem; }
+    .stories .t { grid-column:2; } .stories .go { grid-column:3; grid-row:1; }
+    .stories .j { grid-column:2; grid-row:2; font-size:.98rem; }
     .stories .t { font-size:1.2rem; }
     .stories a:hover { padding-left:0; }
 
@@ -255,14 +262,17 @@
     <p class="kicker label enter">iv. — Stories</p>
     <h2 class="enter d1">Short <em>fiction</em></h2>
     <ul class="stories enter d2">
-      <li><a href="https://www.chicagoquarterlyreview.com/" target="_blank" rel="noopener"><span class="t">Zirkusclown</span><span class="j">Chicago Quarterly Review<small>Spring 2027 · Forthcoming</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://pshares.org/issue-article/machemary-emerging-writers-contest-winner-fiction/" target="_blank" rel="noopener"><span class="t">Mache/Mary</span><span class="j">Ploughshares<small>Emerging Writer’s Contest Winner in Fiction</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://link.springer.com/article/10.1007/s10912-026-10027-4" target="_blank" rel="noopener"><span class="t">Nulato</span><span class="j">Journal of Medical Humanities<small>McGovern Center Writing Award in Fiction · 2026</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://www.aqreview.org/aqr-issues/p/aqr-vol-42-number-1-and-2-winter-spring-2026" target="_blank" rel="noopener"><span class="t">Rome</span><span class="j">Alaska Quarterly Review<small>Vol. 42, Nos. 1 &amp; 2 · Winter/Spring 2026</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://kenyonreview.org/piece/the-woman-from-angers/" target="_blank" rel="noopener"><span class="t">The Woman from Angers</span><span class="j">The Kenyon Review<small>Fall 2023</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://www.thesouthernreview.org/contributors/detail/catherine-kim/4151" target="_blank" rel="noopener"><span class="t">Valdai</span><span class="j">The Southern Review<small>Summer 2026</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://mastersreview.com/new-voices-work-first-by-catherine-kim/" target="_blank" rel="noopener"><span class="t">Work, First</span><span class="j">The Masters Review<small>New Voices · May 2024</small></span><span class="go">↗</span></a></li>
-      <li><a href="https://litmag.com/issues/back-issues/" target="_blank" rel="noopener"><span class="t">Leang</span><span class="j">LitMag<small>Finalist, 2023 Virginia Woolf Award</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://www.chicagoquarterlyreview.com/" target="_blank" rel="noopener"><img class="th" src="thumbs/zirkusclown.jpg" alt="" loading="lazy"><span class="t">Zirkusclown</span><span class="j">Chicago Quarterly Review<small>Spring 2027 · Forthcoming</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://pshares.org/issue-article/machemary-emerging-writers-contest-winner-fiction/" target="_blank" rel="noopener"><img class="th" src="thumbs/mache-mary.jpg" alt="" loading="lazy"><span class="t">Mache/Mary</span><span class="j">Ploughshares<small>Emerging Writer’s Contest Winner in Fiction</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://link.springer.com/article/10.1007/s10912-026-10027-4" target="_blank" rel="noopener"><img class="th" src="thumbs/nulato.jpg" alt="" loading="lazy"><span class="t">Nulato</span><span class="j">Journal of Medical Humanities<small>McGovern Center Writing Award in Fiction · 2026</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://www.aqreview.org/aqr-issues/p/aqr-vol-42-number-1-and-2-winter-spring-2026" target="_blank" rel="noopener"><img class="th" src="thumbs/rome.jpg" alt="" loading="lazy"><span class="t">Rome</span><span class="j">Alaska Quarterly Review<small>Vol. 42, Nos. 1 &amp; 2 · Winter/Spring 2026</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://kenyonreview.org/piece/the-woman-from-angers/" target="_blank" rel="noopener"><img class="th" src="thumbs/woman-from-angers.jpg" alt="" loading="lazy"><span class="t">The Woman from Angers</span><span class="j">The Kenyon Review<small>Fall 2023</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://www.thesouthernreview.org/contributors/detail/catherine-kim/4151" target="_blank" rel="noopener"><img class="th" src="thumbs/valdai.jpg" alt="" loading="lazy"><span class="t">Valdai</span><span class="j">The Southern Review<small>Summer 2026</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://mastersreview.com/new-voices-work-first-by-catherine-kim/" target="_blank" rel="noopener"><img class="th" src="thumbs/work-first.jpg" alt="" loading="lazy"><span class="t">Work, First</span><span class="j">The Masters Review<small>New Voices · May 2024</small></span><span class="go">↗</span></a></li>
+      <li><a href="https://litmag.com/issues/back-issues/" target="_blank" rel="noopener"><img class="th" src="thumbs/leang.jpg" alt="" loading="lazy"><span class="t">Leang</span><span class="j">LitMag<small>Finalist, 2023 Virginia Woolf Award</small></span><span class="go">↗</span></a></li>
+      <li><div class="row"><img class="th" src="thumbs/speckled-monster.jpg" alt="" loading="lazy"><span class="t">The Speckled Monster</span><span class="j"></span><span class="go"></span></div></li>
+      <li><div class="row"><img class="th" src="thumbs/homo-sentiens.jpg" alt="" loading="lazy"><span class="t">Homo Sentiens</span><span class="j"></span><span class="go"></span></div></li>
+      <li><div class="row"><img class="th" src="thumbs/only-you-can-help.jpg" alt="" loading="lazy"><span class="t">Only You Can Help</span><span class="j"></span><span class="go"></span></div></li>
     </ul>
   </div></div>
 </section>
